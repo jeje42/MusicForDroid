@@ -1,6 +1,8 @@
 package com.example.jeje.musicfordroid;
 
+import android.content.Intent;
 import android.os.Bundle;
+import android.os.Environment;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.Snackbar;
 import android.view.View;
@@ -12,6 +14,13 @@ import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.widget.AdapterView;
+import android.widget.ListView;
+import android.widget.TextView;
+
+import java.io.File;
+
+import FilesChooser.FileAdapter;
 
 public class Home extends AppCompatActivity
         implements NavigationView.OnNavigationItemSelectedListener {
@@ -40,6 +49,35 @@ public class Home extends AppCompatActivity
 
         NavigationView navigationView = (NavigationView) findViewById(R.id.nav_view);
         navigationView.setNavigationItemSelectedListener(this);
+
+
+
+        final TextView filePathTextView = (TextView) findViewById(R.id.textView2);
+
+        File file = Environment.getExternalStorageDirectory();
+
+        if(Environment.MEDIA_MOUNTED.equals(Environment.getExternalStorageState()))
+            filePathTextView.setText("Le périphérique est bien monté : " + file.listFiles().length);
+        else
+            filePathTextView.setText("Le périphérique n'est pas bien monté ou on ne peut écrire dessus");
+
+        final FileAdapter mAdapter = new FileAdapter(this, android.R.layout.simple_list_item_checked, file.listFiles());
+        // On ajoute l'adaptateur à la liste
+        ListView mList = (ListView) findViewById(R.id.listView);
+        mList.setAdapter(mAdapter);
+
+        // On ajoute un Listener sur les items de la liste
+        mList.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+			@Override
+			public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+				filePathTextView.setText("position : " + position);
+			}
+		});
+    }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
     }
 
     @Override
@@ -68,6 +106,8 @@ public class Home extends AppCompatActivity
 
         //noinspection SimplifiableIfStatement
         if (id == R.id.action_settings) {
+			Intent intent = new Intent(this, SettingsActivity.class);
+			startActivity(intent);
             return true;
         }
 
